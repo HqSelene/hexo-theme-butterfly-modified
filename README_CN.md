@@ -6,7 +6,7 @@
 
 <img src="./source/img/butterfly-icon.png" width="150" height="150" />
 
-# hexo-theme-butterfly
+# hexo-theme-butterfly-modified
 
 ![master version](https://img.shields.io/github/package-json/v/jerryc127/hexo-theme-butterfly/master?color=%231ab1ad&label=master)
 ![master version](https://img.shields.io/github/package-json/v/jerryc127/hexo-theme-butterfly/dev?label=dev)
