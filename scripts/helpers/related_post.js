@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /**
  * Butterfly
  * Related Posts
@@ -7,35 +6,31 @@
 
 'use strict'
 
-const { postDesc } = require('../common/postDesc')
-
 hexo.extend.helper.register('related_posts', function (currentPost, allPosts) {
   let relatedPosts = []
-  const tagsData = currentPost.tags
-  tagsData.length && tagsData.forEach(function (tag) {
+  currentPost.tags.forEach(function (tag) {
     allPosts.forEach(function (post) {
-      if (currentPost.path !== post.path && isTagRelated(tag.name, post.tags)) {
-        const getPostDesc = post.postDesc || postDesc(post, hexo)
+      if (isTagRelated(tag.name, post.tags)) {
         const relatedPost = {
           title: post.title,
           path: post.path,
           cover: post.cover,
-          cover_type: post.cover_type,
+          randomcover: post.randomcover,
           weight: 1,
           updated: post.updated,
-          created: post.date,
-          postDesc: getPostDesc
+          created: post.date
         }
         const index = findItem(relatedPosts, 'path', post.path)
         if (index !== -1) {
           relatedPosts[index].weight += 1
         } else {
-          relatedPosts.push(relatedPost)
+          if (currentPost.path !== post.path) {
+            relatedPosts.push(relatedPost)
+          }
         }
       }
     })
   })
-
   if (relatedPosts.length === 0) {
     return ''
   }
@@ -55,28 +50,20 @@ hexo.extend.helper.register('related_posts', function (currentPost, allPosts) {
     result += '<div class="relatedPosts-list">'
 
     for (let i = 0; i < Math.min(relatedPosts.length, limitNum); i++) {
-      let { cover, title, path, cover_type, created, updated, postDesc } = relatedPosts[i]
-      const { escape_html, url_for, date } = this
-      cover = cover || 'var(--default-bg-color)'
-      title = escape_html(title)
-      const className = postDesc ? 'pagination-related' : 'pagination-related no-desc'
-      result += `<a class="${className}" href="${url_for(path)}" title="${title}">`
-      if (cover_type === 'img') {
-        result += `<img class="cover" src="${url_for(cover)}" alt="cover">`
-      } else {
-        result += `<div class="cover" style="background: ${cover}"></div>`
-      }
+      const cover =
+        relatedPosts[i].cover === false
+          ? relatedPosts[i].randomcover
+          : relatedPosts[i].cover
+      const title = this.escape_html(relatedPosts[i].title)
+      result += `<div><a href="${this.url_for(relatedPosts[i].path)}" title="${title}">`
+      result += `<img class="cover" src="${this.url_for(cover)}" alt="cover">`
       if (dateType === 'created') {
-        result += `<div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> ${date(created, hexoConfig.date_format)}</div>`
+        result += `<div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> ${this.date(relatedPosts[i].created, hexoConfig.date_format)}</div>`
       } else {
-        result += `<div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="fas fa-history fa-fw"></i> ${date(updated, hexoConfig.date_format)}</div>`
+        result += `<div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> ${this.date(relatedPosts[i].updated, hexoConfig.date_format)}</div>`
       }
-      result += `<div class="info-item-2">${title}</div></div>`
-
-      if (postDesc) {
-        result += `<div class="info-2"><div class="info-item-1">${postDesc}</div></div>`
-      }
-      result += '</div></a>'
+      result += `<div class="title">${title}</div>`
+      result += '</div></a></div>'
     }
 
     result += '</div></div>'
@@ -84,14 +71,29 @@ hexo.extend.helper.register('related_posts', function (currentPost, allPosts) {
   }
 })
 
-function isTagRelated (tagName, tags) {
-  return tags.some(tag => tag.name === tagName)
+function isTagRelated (tagName, TBDtags) {
+  let result = false
+  TBDtags.forEach(function (tag) {
+    if (tagName === tag.name) {
+      result = true
+    }
+  })
+  return result
 }
 
 function findItem (arrayToSearch, attr, val) {
-  return arrayToSearch.findIndex(item => item[attr] === val)
+  for (let i = 0; i < arrayToSearch.length; i++) {
+    if (arrayToSearch[i][attr] === val) {
+      return i
+    }
+  }
+  return -1
 }
 
 function compare (attr) {
-  return (a, b) => b[attr] - a[attr]
+  return function (a, b) {
+    const val1 = a[attr]
+    const val2 = b[attr]
+    return val2 - val1
+  }
 }
