@@ -20,38 +20,46 @@
 <div class="project-container">
   <!-- ... 其他代码保持不变 ... -->
 
-  <div class="project-section">
-    <div class="section-header">
-      <div class="section-line"></div>
-      <h2>Design</h2>
-      <div class="section-line"></div>
-    </div>
-    <div class="project-list">
-      <% const designCategory = site.categories.findOne({name: 'design'}) %>
-      <% if (designCategory && designCategory.posts.length > 0) { %>
-        <ul class="list-group custom-list">
-          <% designCategory.posts.sort('date', -1).each(function(post, index){ %>
-            <li class="list-group-item d-flex align-items-center" onclick="window.location.href='<%= url_for(post.path) %>'">
-              <div class="post-number"><%= (index + 1).toString().padStart(2, '0') %></div>
-              <div class="post-title"><%= post.title %></div>
-              <div class="post-labels">
-                <% if (post.mylabels && post.mylabels.length) { %>
-                  <% post.mylabels.forEach(function(mylabel) { %>
-                    <span class="label-badge"><%= mylabel.name %></span>
-                  <% }) %>
-                <% } %>
-              </div>
-              <div class="project-preview">
-                <img src="<%= post.cover || theme.default_cover %>" alt="<%= post.title %>">
-              </div>
-            </li>
-          <% }) %>
-        </ul>
-      <% } else { %>
-        <p class="no-posts">Under Construction</p>
-      <% } %>
+  <% const categories = ['design', 'data science', 'interaction design'] %>
+  <% categories.forEach(function(categoryName) { %>
+    <div class="project-section">
+      <div class="section-header">
+        <div class="section-line"></div>
+        <h2><%= categoryName.charAt(0).toUpperCase() + categoryName.slice(1) %></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="project-list">
+        <% const designCategory = site.categories.findOne({name:categoryName}) %>
+        <% if (designCategory && designCategory.posts.length > 0) { %>
+            <div class="project-grid">
+                    <% designCategory.posts.sort('date', -1).each(function(post, index){ %>
+                      <a class="card-link" href="<%= url_for(post.path) %>">
+                      <div class="project-card">
+                        <div class="card-inner">
+                          <div class="card-front">
+                            <img src="<%= post.cover || theme.default_cover %>" alt="<%= post.title %>">
+                            <div class="project-title"><%= post.title %></div>
+                          </div>
+                          <div class="card-back">
+                            <% if (post.mylabels && post.mylabels.length) { %>
+                              <div class="keywords">
+                                <% post.mylabels.forEach(function(mylabel) { %>
+                                  <span class="keyword-badge"><%= mylabel.name %></span>
+                                <% }) %>
+                              </div>
+                            <% } %>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <% }) %>
+                  </div>
+        <% } else { %>
+          <p class="no-posts">Under Construction</p>
+        <% } %>
     </div>
   </div>
+  <% }) %>
 
   <!-- ... 其他代码保持不变 ... -->
 </div>
@@ -63,11 +71,80 @@
   @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
 
   body {
-    background-color: #FDF3CF;
+    background-color: #E2E1E7;
   }
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
 .custom-list {
   list-style: none;
   padding: 0;
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.card-front {
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-front img {
+  width: 100%;
+  height: 80%;
+  object-fit: cover;
+}
+
+.project-title {
+  padding: 1rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  color: #147D42;
+}
+
+.card-back {
+  background: #147D42;
+  color: white;
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.keyword-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  backdrop-filter: blur(5px);
 }
 
 .custom-list .list-group-item {
@@ -144,6 +221,10 @@
   padding: 40px 20px;
 }
 
+.project-card:hover .card-inner {
+  transform: rotateY(180deg);
+}
+
 .project-intro {
   text-align: center;
   margin-bottom: 60px;
@@ -152,6 +233,19 @@
 .project-intro p {
   font-size: 24px;
   letter-spacing: 1px;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.project-card {
+  perspective: 1000px;
+  height: 300px;
+  cursor: pointer;
 }
 
 .intro-text {
@@ -177,7 +271,7 @@
 }
 
 .nav-bar {
-  background-color: #FDF3CF;
+  background-color: #E2E1E7; /*FDF3CF*/
   padding: 1rem 0;
   margin-bottom: 2rem;
   width: 100%;
@@ -373,6 +467,11 @@
     background: #e0e0e0;
     transform: translateY(-1px);
   }
+  .project-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+  }
 }
 
 .rotating-text {
@@ -404,6 +503,7 @@
 <script>
 // 添加轮播文字的脚本
 const texts = ['architecture', 'HCI', 'interaction design', 'data science'];
+
 let currentIndex = 0;
 const rotatingElement = document.querySelector('.rotating-text');
 

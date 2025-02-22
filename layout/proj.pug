@@ -1,0 +1,12 @@
+extends includes/layout_customized.pug
+
+block content
+  #proj-container
+    .proj-text-column
+      .text-content
+        != page.content
+    .proj-image-column
+      if page.images
+        each image, index in page.images
+          .proj-image-section(data-section=index)
+            img(src=url_for(image.url) alt=image.description)
