@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- partial('includes/head') %>
+    <link rel="stylesheet" href="/css/custom_layout.css">
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-list">
+                <li><a href="/project">Home</a></li>
+                <li><a href="/about">About Me</a></li>
+                <li><a href="/pdf/Qing_He_Selected_Works.pdf" target="_blank">Working Sample</a></li>
+                <li><a href="/">Blog</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <style>
+    .menu-toggle {
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        cursor: pointer;
+        padding: 10px;
+        z-index: 1000;
+    }
+    
+    .menu-toggle span {
+        display: block;
+        width: 25px;
+        height: 2px;
+        background-color: #1a45c8;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .menu-toggle.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+    background-color: #f787ce;
+    }
+
+    .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-toggle.active span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+        background-color: #f787ce;
+    }
+
+    
+    @media (max-width: 768px) {
+        .menu-toggle {
+            display: flex;
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            z-index: 1001; 
+        }
+    
+        .nav-list {
+        display: block;
+        flex-direction: column;
+        width: -200px;
+        position: fixed;
+        top: 0;
+        left: 200px;  /* 改用left定位 */
+        height: auto;
+        background: #e2e1e700;
+        padding: 80px 0;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-list.active {
+        left: 0;  /* 显示时移动到可见区域 */
+        background: rgba(247, 135, 206, 0.15);
+        backdrop-filter: blur(8px);
+        visibility: visible;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-list li {
+        opacity: 0;
+        transform: translateX(-20px);
+        transition: all 0.3s ease;
+    }
+
+    .nav-list.active li {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    /* 为每个菜单项添加延迟动画 */
+    .nav-list li:nth-child(1) { transition-delay: 0.1s; }
+    .nav-list li:nth-child(2) { transition-delay: 0.2s; }
+    .nav-list li:nth-child(3) { transition-delay: 0.3s; }
+    .nav-list li:nth-child(4) { transition-delay: 0.4s; }
+}
+    </style>
+    
+    <script>
+    document.querySelector('.menu-toggle').addEventListener('click', function() {
+        document.querySelector('.nav-list').classList.toggle('active');
+        this.classList.toggle('active');
+    });
+    </script>
+</body>
+
