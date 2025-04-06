@@ -21,12 +21,15 @@
       <%- page.content %>
     </article>
 
-    <aside class="toc-container">
-      <div class="toc-wrapper">
-        <div class="toc-title">Outline</div>
-        <div class="toc-content"></div>
-      </div>
-    </aside>
+    <% const headings = page.content.match(/<h[1-6].*?>.*?<\/h[1-6]>/g) %>
+    <% if (headings && headings.length > 0) { %>
+      <aside class="toc-container">
+        <div class="toc-wrapper">
+          <div class="toc-title">Outline</div>
+          <div class="toc-content"></div>
+        </div>
+      </aside>
+    <% } %>
   </div>
   <div class="image-viewer">
     <div class="image-viewer-container">
@@ -35,7 +38,6 @@
     </div>
   </div>
 </div>
-
 <style>
 
 .project-banner {
